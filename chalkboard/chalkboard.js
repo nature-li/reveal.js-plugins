@@ -31,6 +31,7 @@ var RevealChalkboard = window.RevealChalkboard || (function () {
             }
         }
 
+        // 拿到 script 的 src，然后做字符串截取操作
         var path = typeof src === undefined ? src : src.slice(0, src.lastIndexOf("/") + 1);
         //console.log("Path: " + path);
         return path;
@@ -45,31 +46,41 @@ var RevealChalkboard = window.RevealChalkboard || (function () {
     var theme = config.theme || "chalkboard";
     switch (theme) {
         case "whiteboard":
+            // 两对数据
             background = ['rgba(127,127,127,.1)', path + 'img/whiteboard.png'];
-            pen = ['url(' + path + 'img/boardmarker.png), auto',
-                'url(' + path + 'img/boardmarker.png), auto'];
+            pen = ['url(' + path + 'img/boardmarker.png), auto', 'url(' + path + 'img/boardmarker.png), auto'];
             draw = [drawWithPen, drawWithPen];
             color = ['rgba(0,0,255,1)', 'rgba(0,0,255,1)'];
             break;
         default:
+            // 两对数据
             background = ['rgba(127,127,127,.1)', path + 'img/blackboard.png'];
-            pen = ['url(' + path + 'img/boardmarker.png), auto',
-                'url(' + path + 'img/chalk.png), auto'];
+            pen = ['url(' + path + 'img/boardmarker.png), auto', 'url(' + path + 'img/chalk.png), auto'];
             draw = [drawWithPen, drawWithChalk];
             color = ['rgba(0,0,255,1)', 'rgba(255,255,255,0.5)'];
     }
 
+    /**
+     * 1) 用配置的 background 覆盖通过 theme 计算出的 background
+     * 2) 用配置的 pen, draw, color 覆盖通过 theme 计算出的 background
+     */
     if (config.background) background = config.background;
     if (config.pen) pen = config.pen;
     if (config.draw) draw = config.draw;
     if (config.color) color = config.color;
 
+    /**
+     * 如果定义了就用定义的配置，否则设置成 true?
+     */
     var toggleChalkboardButton = config.toggleChalkboardButton == undefined ? true : config.toggleChalkboardButton;
     var toggleNotesButton = config.toggleNotesButton == undefined ? true : config.toggleNotesButton;
+    // 猜测应该是动画时间之类的
     var transition = config.transition || 800;
 
+    // 这个 readOnly 还不知道什么意思，不过意义重大
     var readOnly = config.readOnly;
 
+    // 不知道什么意思
     var legacyFileSupport = config.legacyFileSupport;
     if (legacyFileSupport) {
         console.warn("Legacy file support is deprecated and may be removed in future versions!")
@@ -78,8 +89,8 @@ var RevealChalkboard = window.RevealChalkboard || (function () {
     /*****************************************************************
      ** Setup
      ******************************************************************/
-
     function whenReady(callback) {
+        // 等待以下2个对象加载好
         // wait for drawings to be loaded and markdown to be parsed
         if (loaded == null || document.querySelector('section[data-markdown]:not([data-markdown-parsed])')) {
             setTimeout(whenReady, 100, callback)
@@ -88,10 +99,12 @@ var RevealChalkboard = window.RevealChalkboard || (function () {
         }
     }
 
+    // 橡皮擦直径
     var eraserDiameter = 20;
 
+    // 非显式配置成 false
     if (toggleChalkboardButton) {
-//console.log("toggleChalkboardButton")
+        //console.log("toggleChalkboardButton")
         var button = document.createElement('div');
         button.className = "chalkboard-button";
         button.id = "toggle-chalkboard";
@@ -100,16 +113,20 @@ var RevealChalkboard = window.RevealChalkboard || (function () {
         button.style.zIndex = 30;
         button.style.fontSize = "24px";
 
+        // 2支笔的位置可以配置
         button.style.left = toggleChalkboardButton.left || "30px";
         button.style.bottom = toggleChalkboardButton.bottom || "30px";
         button.style.top = toggleChalkboardButton.top || "auto";
         button.style.right = toggleChalkboardButton.right || "auto";
 
+        // 插入新创建的 DOM 元素
         button.innerHTML = '<a href="#" onclick="RevealChalkboard.toggleChalkboard(); return false;"><i class="fa fa-pencil-square-o"></i></a>'
         document.querySelector(".reveal").appendChild(button);
     }
+
+    // 非显式配置成 false
     if (toggleNotesButton) {
-//console.log("toggleNotesButton")
+        //console.log("toggleNotesButton")
         var button = document.createElement('div');
         button.className = "chalkboard-button";
         button.id = "toggle-notes";
@@ -117,11 +134,13 @@ var RevealChalkboard = window.RevealChalkboard || (function () {
         button.style.zIndex = 30;
         button.style.fontSize = "24px";
 
+        // 2支笔的位置可以配置
         button.style.left = toggleNotesButton.left || "70px";
         button.style.bottom = toggleNotesButton.bottom || "30px";
         button.style.top = toggleNotesButton.top || "auto";
         button.style.right = toggleNotesButton.right || "auto";
 
+        // 插入新创建的 DOM 元素
         button.innerHTML = '<a href="#" onclick="RevealChalkboard.toggleNotesCanvas(); return false;"><i class="fa fa-pencil"></i></a>'
         document.querySelector(".reveal").appendChild(button);
     }
