@@ -14,6 +14,11 @@
 var RevealChalkboard = window.RevealChalkboard || (function () {
     var path = scriptPath();
 
+    /**
+     * 获取 chalkboard.js 的路径，
+     * 如 http://localhost/xxx/yyy/zzz/chalkboard.js 的路径为
+     * http://localhost/xxx/yyy/zzz/
+     */
     function scriptPath() {
         // obtain plugin path from the script element
         var src;
@@ -26,9 +31,8 @@ var RevealChalkboard = window.RevealChalkboard || (function () {
             }
         }
 
-        var path = typeof src === undefined ? src
-            : src.slice(0, src.lastIndexOf("/") + 1);
-//console.log("Path: " + path);
+        var path = typeof src === undefined ? src : src.slice(0, src.lastIndexOf("/") + 1);
+        //console.log("Path: " + path);
         return path;
     }
 
