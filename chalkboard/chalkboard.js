@@ -144,8 +144,9 @@ var RevealChalkboard = window.RevealChalkboard || (function () {
         button.innerHTML = '<a href="#" onclick="RevealChalkboard.toggleNotesCanvas(); return false;"><i class="fa fa-pencil"></i></a>'
         document.querySelector(".reveal").appendChild(button);
     }
-//alert("Buttons");
+    //alert("Buttons");
 
+    // 2个画布id?
     var drawingCanvas = [{id: "notescanvas"}, {id: "chalkboard"}];
     setupDrawingCanvas(0);
     setupDrawingCanvas(1);
@@ -170,11 +171,14 @@ var RevealChalkboard = window.RevealChalkboard || (function () {
         container.id = drawingCanvas[id].id;
         container.classList.add('overlay');
         container.setAttribute('data-prevent-swipe', '');
+
+        // 鼠标右击事件
         container.oncontextmenu = function () {
             return false;
-        }
+        };
         container.style.cursor = pen[id];
 
+        // 画布大小
         drawingCanvas[id].width = window.innerWidth;
         drawingCanvas[id].height = window.innerHeight;
         drawingCanvas[id].scale = 1;
@@ -196,6 +200,7 @@ var RevealChalkboard = window.RevealChalkboard || (function () {
                 drawingCanvas[id].yOffset = (drawingCanvas[id].height - drawingCanvas[id].width / aspectRatio) / 2;
             }
         } else {
+            // container 背景
             container.style.background = 'url("' + background[id] + '") repeat';
             container.style.zIndex = "26";
         }
